@@ -11,9 +11,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
-import java.util.logging.Logger;
-
-import fr.ups.sim.superpianotiles.obj.Position;
 import fr.ups.sim.superpianotiles.obj.Tile;
 
 public class TilesStartActivity extends Activity {
@@ -30,7 +27,9 @@ public class TilesStartActivity extends Activity {
         tilesView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                return onTouchEventHandler(event);
+                boolean result = onTouchEventHandler(event);
+                v.postInvalidate();
+                return result;
             }
         });
     }
@@ -81,21 +80,26 @@ public class TilesStartActivity extends Activity {
 
             // Pour chacune des tiles de la vue, on doit vérifier si il y collision
             for (Tile currentTile : tilesView.getTiles()) {
-                isTouched = isTouched || currentTile.isTouched(evt.getX(), evt.getY());
+                isTouched = currentTile.isTouched(evt.getX(), evt.getY());
                 if (isTouched) {
                     int duration = Toast.LENGTH_SHORT;
                     Toast toast = Toast.makeText(context, currentTile.getText(), duration);
                     toast.show();
+                    currentTile.setColorTile(Color.WHITE);
+                    currentTile.setColorText(Color.WHITE);
                     Log.i("TilesView", "Tile touched - " + currentTile.getText());
-                    return isTouched;
+
+                    return true;
                 }
             }
 
-            if (!isTouched)
+            if (!isTouched)     // Si aucune tile n'a été touché, le joueur a perdu
                 Log.i("TilesView", "No tile touched - Player Lost");
         }
-        else  // Au relâchement de la pression sur l'écran
-            return true;
+        else {
+            if (evt.getAction() == MotionEvent.ACTION_UP)// Au relâchement de la pression sur l'écran
+                return true;
+        }
 
         return false;
     }
