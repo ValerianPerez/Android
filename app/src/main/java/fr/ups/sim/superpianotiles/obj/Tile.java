@@ -1,0 +1,79 @@
+package fr.ups.sim.superpianotiles.obj;
+
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.util.Pair;
+
+/**
+ * Created by Nolan on 21/03/2016.
+ */
+public class Tile {
+    // -    Attributs privés
+    private int colorTile;
+    private int colorText;
+    private String text;                // Texte affiché sur la tile
+    private float textSize = 40;
+    private Position positionTile;
+    private RectF tileForm;
+
+    // +    Attributs publics
+    public Paint pText = new Paint();
+    public Paint pTile = new Paint();
+
+    public Tile(int colorTile, int colorText, String text, float textSize, Position positionTile, RectF tileForm) {
+        this.colorTile = colorTile;
+        this.colorText = colorText;
+        this.text = text;
+        this.textSize = textSize;
+        this.positionTile = positionTile;
+        this.tileForm = tileForm;
+
+        pText.setTextSize(textSize);
+        pText.setColor(colorText);
+        pTile.setColor(colorTile);
+    }
+
+    public int getColorTile() {
+        return colorTile;
+    }
+
+    public int getColorText() {
+        return colorText;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public float getTextSize(){
+        return textSize;
+    }
+
+    public Position getPositionTile() {
+        return positionTile;
+    }
+
+    public RectF getTileForm() {
+        return tileForm;
+    }
+
+    /*
+    * isTouched renvoie :
+    *   true si le point désigné par les coordonnées (x,y) appartient à la tile
+    *   false sinon
+    * */
+    public boolean isTouched(float x, float y) {
+        return !(x < this.positionTile.getLeft()
+                || y < this.positionTile.getTop()
+                || x > this.positionTile.getRight()
+                || y > this.positionTile.getBottom());
+    }
+
+    public void setColorTile(int c) {
+        colorTile = c;
+    }
+
+    public void setColorText(int c) {
+        colorText = c;
+    }
+}
