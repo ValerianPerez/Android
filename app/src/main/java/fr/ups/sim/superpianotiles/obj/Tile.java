@@ -71,9 +71,11 @@ public class Tile {
 
     public void setColorTile(int c) {
         colorTile = c;
+        pTile.setColor(c);
     }
 
     public void setColorText(int c) {
         colorText = c;
+        pText.setColor(c);
     }
 }
