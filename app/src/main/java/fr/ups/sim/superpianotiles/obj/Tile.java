@@ -76,4 +76,12 @@ public class Tile {
     public void setColorText(int c) {
         colorText = c;
     }
+
+    public void setPositionTile(Position positionTile) {
+        this.positionTile = positionTile;
+    }
+
+    public void setTileForm(RectF tileForm) {
+        this.tileForm = tileForm;
+    }
 }

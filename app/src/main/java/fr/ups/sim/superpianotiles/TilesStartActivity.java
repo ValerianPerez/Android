@@ -77,21 +77,22 @@ public class TilesStartActivity extends Activity {
         if (evt.getAction() == MotionEvent.ACTION_DOWN) {
             Context context = getApplicationContext();
             TilesView tilesView = (TilesView) findViewById(R.id.view);
+            boolean isTouched = false;
 
             // Pour chacune des tiles de la vue, on doit vérifier si il y collision
             for (Tile currentTile : tilesView.getTiles()) {
-                if (currentTile.isTouched(evt.getX(), evt.getY())) {
+                isTouched = isTouched || currentTile.isTouched(evt.getX(), evt.getY());
+                if (isTouched) {
                     int duration = Toast.LENGTH_SHORT;
                     Toast toast = Toast.makeText(context, currentTile.getText(), duration);
                     toast.show();
                     Log.i("TilesView", "Tile touched - " + currentTile.getText());
-                    return true;
-                }
-                else {    // Si aucune tile n'est touchée l'utilisateur à perdu !
-                    Log.i("TilesView", "No tile touched - Player lost");
-                    return true;
+                    return isTouched;
                 }
             }
+
+            if (!isTouched)
+                Log.i("TilesView", "No tile touched - Player Lost");
         }
         else  // Au relâchement de la pression sur l'écran
             return true;
