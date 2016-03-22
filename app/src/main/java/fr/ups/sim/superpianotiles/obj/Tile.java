@@ -14,7 +14,6 @@ public class Tile {
     private String text;                // Texte affiché sur la tile
     private float textSize = 40;
     private Position positionTile;
-    private RectF tileForm;
 
     // +    Attributs publics
     public Paint pText = new Paint();
@@ -26,7 +25,6 @@ public class Tile {
         this.text = text;
         this.textSize = textSize;
         this.positionTile = positionTile;
-        this.tileForm = tileForm;
 
         pText.setTextSize(textSize);
         pText.setColor(colorText);
@@ -53,8 +51,8 @@ public class Tile {
         return positionTile;
     }
 
-    public RectF getTileForm() {
-        return tileForm;
+    public void setPositionTile(Position positionTile) {
+        this.positionTile = positionTile;
     }
 
     /*

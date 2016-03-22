@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import fr.ups.sim.superpianotiles.obj.Position;
 import fr.ups.sim.superpianotiles.obj.Tile;
 
 public class TilesStartActivity extends Activity {
@@ -69,7 +70,6 @@ public class TilesStartActivity extends Activity {
      *      false sinon
     */
     private boolean onTouchEventHandler (MotionEvent evt){
-
         Log.i("TilesView", "Touch event handled - " + evt.getAction());
 
         // Quand l'utilisateur touche l'écran, pas quand il relâche la pression
@@ -82,11 +82,11 @@ public class TilesStartActivity extends Activity {
             for (Tile currentTile : tilesView.getTiles()) {
                 isTouched = currentTile.isTouched(evt.getX(), evt.getY());
                 if (isTouched) {
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(context, currentTile.getText(), duration);
-                    toast.show();
-                    currentTile.setColorTile(Color.WHITE);
-                    currentTile.setColorText(Color.WHITE);
+//                    int duration = Toast.LENGTH_SHORT;
+//                    Toast toast = Toast.makeText(context, currentTile.getText(), duration);
+//                    toast.show();
+                    tilesView.getTiles().remove(currentTile);
+                    slideTiles();
                     Log.i("TilesView", "Tile touched - " + currentTile.getText());
 
                     return true;
@@ -96,11 +96,24 @@ public class TilesStartActivity extends Activity {
             if (!isTouched)     // Si aucune tile n'a été touché, le joueur a perdu
                 Log.i("TilesView", "No tile touched - Player Lost");
         }
-        else {
-            if (evt.getAction() == MotionEvent.ACTION_UP)// Au relâchement de la pression sur l'écran
+        else
+            if (evt.getAction() == MotionEvent.ACTION_UP)   // Au relâchement de la pression sur l'écran
                 return true;
-        }
 
         return false;
+    }
+
+    public void slideTiles() {
+        TilesView tilesView = (TilesView) findViewById(R.id.view);
+        Position currPosition = new Position();
+        int tileSize = 0;
+
+        for (Tile currTile : tilesView.getTiles()) {
+            currPosition = currTile.getPositionTile();
+            tileSize = currPosition.getBottom() - currPosition.getTop();
+            currPosition.setTop(currPosition.getTop() + tileSize);
+            currPosition.setBottom(currPosition.getBottom() + tileSize);
+            currTile.setPositionTile(currPosition);
+        }
     }
 }

@@ -19,10 +19,7 @@ import fr.ups.sim.superpianotiles.obj.Tile;
  */
 public class TilesView extends View {
 
-    private int tileColor = Color.RED;
-    private int textColor = Color.WHITE;
     private Drawable mExampleDrawable;
-    private float textSize = 40;
     private boolean init = true;
 
     // ArrayList contenant les tiles à afficher à l'écran
@@ -144,7 +141,7 @@ public class TilesView extends View {
     }
 
     public void addTile(Tile tile, Canvas canvas){
-        RectF rect = tile.getTileForm();
+        RectF rect = tile.getPositionTile().getPositionForm();
         canvas.drawRoundRect(rect, 2, 2, tile.pTile);
         canvas.drawText(tile.getText(), rect.centerX(), rect.centerY(), tile.pText);
     }
