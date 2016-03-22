@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Created by Anadidathorion on 21/03/2016.
+ * Created by Valérian on 21/03/2016.
  */
 public enum QuarterPosition {
     FIRST,
