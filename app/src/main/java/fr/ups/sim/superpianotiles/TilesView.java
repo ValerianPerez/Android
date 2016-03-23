@@ -8,6 +8,9 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 
@@ -17,7 +20,7 @@ import fr.ups.sim.superpianotiles.obj.Tile;
 /**
  * Custom view that displays tiles
  */
-public class TilesView extends View {
+public class TilesView extends ImageView {
 
     private Drawable mExampleDrawable;
     private boolean init = true;
@@ -167,5 +170,17 @@ public class TilesView extends View {
 
     public ArrayList<Tile> getTiles() {
         return tiles;
+    }
+
+    @Override
+    public void onAnimationStart() {
+        super.onAnimationStart();
+        this.setDrawingCacheEnabled(true);
+    }
+
+    @Override
+    public void onAnimationEnd() {
+        super.onAnimationEnd();
+        this.setDrawingCacheEnabled(false);
     }
 }

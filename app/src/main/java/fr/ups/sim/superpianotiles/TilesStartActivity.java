@@ -1,8 +1,10 @@
 package fr.ups.sim.superpianotiles;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -89,7 +91,7 @@ public class TilesStartActivity extends Activity {
             /* On fait aussi défiler les autres tuiles vers le bas */
             if (currentTile != null && currentTile.isTouched(x, y)) {
                 tilesView.getTiles().remove(0);
-                slideTiles(tilesView);
+                slideTiles();
                 Log.i("TilesView", "Tile touched - " + currentTile.getText());
             }
             else // Si aucune tile n'a été touché, le joueur a perdu
@@ -104,41 +106,41 @@ public class TilesStartActivity extends Activity {
         return false;
     }
 
-    public void slideTiles(TilesView tilesView) {
-
-        Position currPosition = new Position();
-        int tileSize = 0;
-
-        for (Tile currTile : tilesView.getTiles()) {
-            currPosition = currTile.getPositionTile();
-            tileSize = currPosition.getBottom() - currPosition.getTop();
-            currPosition.setTop(currPosition.getTop() + tileSize);
-            currPosition.setBottom(currPosition.getBottom() + tileSize);
-            currTile.setPositionTile(currPosition);
-        }
+    public void slideTiles() {
 
         /* Utiliser deux animations (dont une ne fait rien ici) et les enchaîner permet d'éviter
          * le prblème de flicker à la fin de l'animation.
          * Initialement (sans le listener et l'animation "vide" il y avait un clignotement à l'écran
          * à la fin de l'animation de défilement. */
-        Animation animation = new TranslateAnimation(0, 0, 0 ,0);
-        animation.setDuration(1);
+        TilesView tilesView = (TilesView) findViewById(R.id.view);
 
-        animation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {}
+        Animation slideTiles = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_tiles_4x4);
+        tilesView.startAnimation(slideTiles);
 
+        Thread delayPositionRefresh = new Thread() {
             @Override
-            public void onAnimationEnd(Animation animation) {
-                /* Animation du défilement des tiles */
-                animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_tiles_4x4);
-                animation.start();
+            public void run() {
+
+                try {
+                    sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                TilesView tilesView = (TilesView) findViewById(R.id.view);
+                Position currPosition = new Position();
+                int tileSize = 0;
+
+                for (Tile currTile : tilesView.getTiles()) {
+                    currPosition = currTile.getPositionTile();
+                    tileSize = currPosition.getBottom() - currPosition.getTop();
+                    currPosition.setTop(currPosition.getTop() + tileSize);
+                    currPosition.setBottom(currPosition.getBottom() + tileSize);
+                    currTile.setPositionTile(currPosition);
+                }
             }
+        };
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {}
-        });
-
-        tilesView.startAnimation(animation);
+        delayPositionRefresh.start();
     }
 }
