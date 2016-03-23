@@ -9,8 +9,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.Toast;
 
+import fr.ups.sim.superpianotiles.obj.Position;
 import fr.ups.sim.superpianotiles.obj.Tile;
 
 public class TilesStartActivity extends Activity {
@@ -28,7 +32,6 @@ public class TilesStartActivity extends Activity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 boolean result = onTouchEventHandler(event);
-                v.postInvalidate();
                 return result;
             }
         });
@@ -69,38 +72,73 @@ public class TilesStartActivity extends Activity {
      *      false sinon
     */
     private boolean onTouchEventHandler (MotionEvent evt){
-
         Log.i("TilesView", "Touch event handled - " + evt.getAction());
 
         // Quand l'utilisateur touche l'écran, pas quand il relâche la pression
         if (evt.getAction() == MotionEvent.ACTION_DOWN) {
-            Context context = getApplicationContext();
+            float x = evt.getX();
+            float y = evt.getY();
+
             TilesView tilesView = (TilesView) findViewById(R.id.view);
-            boolean isTouched = false;
+            Tile currentTile = null;
 
-            // Pour chacune des tiles de la vue, on doit vérifier si il y collision
-            for (Tile currentTile : tilesView.getTiles()) {
-                isTouched = currentTile.isTouched(evt.getX(), evt.getY());
-                if (isTouched) {
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(context, currentTile.getText(), duration);
-                    toast.show();
-                    currentTile.setColorTile(Color.WHITE);
-                    currentTile.setColorText(Color.WHITE);
-                    Log.i("TilesView", "Tile touched - " + currentTile.getText());
+            if (! tilesView.getTiles().isEmpty())
+                currentTile = tilesView.getTiles().get(0);
 
-                    return true;
-                }
+            /* Si la première tile est touchée, alors il faut la supprimer. */
+            /* On fait aussi défiler les autres tuiles vers le bas */
+            if (currentTile != null && currentTile.isTouched(x, y)) {
+                tilesView.getTiles().remove(0);
+                slideTiles(tilesView);
+                Log.i("TilesView", "Tile touched - " + currentTile.getText());
             }
-
-            if (!isTouched)     // Si aucune tile n'a été touché, le joueur a perdu
+            else // Si aucune tile n'a été touché, le joueur a perdu
                 Log.i("TilesView", "No tile touched - Player Lost");
+
+            return true;
         }
-        else {
-            if (evt.getAction() == MotionEvent.ACTION_UP)// Au relâchement de la pression sur l'écran
+        else
+            if (evt.getAction() == MotionEvent.ACTION_UP)   // Au relâchement de la pression sur l'écran
                 return true;
-        }
 
         return false;
+    }
+
+    public void slideTiles(TilesView tilesView) {
+
+        Position currPosition = new Position();
+        int tileSize = 0;
+
+        for (Tile currTile : tilesView.getTiles()) {
+            currPosition = currTile.getPositionTile();
+            tileSize = currPosition.getBottom() - currPosition.getTop();
+            currPosition.setTop(currPosition.getTop() + tileSize);
+            currPosition.setBottom(currPosition.getBottom() + tileSize);
+            currTile.setPositionTile(currPosition);
+        }
+
+        /* Utiliser deux animations (dont une ne fait rien ici) et les enchaîner permet d'éviter
+         * le prblème de flicker à la fin de l'animation.
+         * Initialement (sans le listener et l'animation "vide" il y avait un clignotement à l'écran
+         * à la fin de l'animation de défilement. */
+        Animation animation = new TranslateAnimation(0, 0, 0 ,0);
+        animation.setDuration(1);
+
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                /* Animation du défilement des tiles */
+                animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_tiles_4x4);
+                animation.start();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+
+        tilesView.startAnimation(animation);
     }
 }
