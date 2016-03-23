@@ -89,7 +89,7 @@ public class TilesView extends View {
             // Une tile est composée de sa couleur, celle de son texte, le texte en question et sa taille
             // et enfin de sa position ainsi que de la forme rectangulaire nécessaire à son dessin.
             Position positionTile1 = new Position(left, top, right, bottom);
-            Tile tile1 = new Tile(Color.RED, Color.WHITE, "1", 40, positionTile1, new RectF(left, top, right, bottom));
+            Tile tile1 = new Tile(Color.BLACK, Color.WHITE, "1", 40, positionTile1, new RectF(left, top, right, bottom));
             this.tiles.add(tile1);
 
             //Tile 2
@@ -99,7 +99,7 @@ public class TilesView extends View {
             bottom = contentHeight * 3 / 4;
 
             Position positionTile2 = new Position(left, top, right, bottom);
-            Tile tile2 = new Tile(Color.BLUE, Color.WHITE, "2", 40, positionTile2, new RectF(left, top, right, bottom));
+            Tile tile2 = new Tile(Color.BLACK, Color.WHITE, "2", 40, positionTile2, new RectF(left, top, right, bottom));
             this.tiles.add(tile2);
 
             //Tile 3
@@ -109,7 +109,7 @@ public class TilesView extends View {
             bottom = contentHeight / 2;
 
             Position positionTile3 = new Position(left, top, right, bottom);
-            Tile tile3 = new Tile(Color.GREEN, Color.BLACK, "3", 40, positionTile3, new RectF(left, top, right, bottom));
+            Tile tile3 = new Tile(Color.BLACK, Color.WHITE, "3", 40, positionTile3, new RectF(left, top, right, bottom));
             this.tiles.add(tile3);
 
             //Tile 4
@@ -119,7 +119,7 @@ public class TilesView extends View {
             bottom = contentHeight / 4;
 
             Position positionTile4 = new Position(left, top, right, bottom);
-            Tile tile4 = new Tile(Color.YELLOW, Color.BLACK, "4", 40, positionTile4, new RectF(left, top, right, bottom));
+            Tile tile4 = new Tile(Color.BLACK, Color.WHITE, "4", 40, positionTile4, new RectF(left, top, right, bottom));
             this.tiles.add(tile4);
 
             init = false;

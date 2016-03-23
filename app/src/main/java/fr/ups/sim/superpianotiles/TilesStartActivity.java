@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.Toast;
 
 import fr.ups.sim.superpianotiles.obj.Position;
@@ -31,7 +32,6 @@ public class TilesStartActivity extends Activity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 boolean result = onTouchEventHandler(event);
-                v.postInvalidate();
                 return result;
             }
         });
@@ -106,32 +106,39 @@ public class TilesStartActivity extends Activity {
 
     public void slideTiles(TilesView tilesView) {
 
-        Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_tiles_4x4);
-        tilesView.startAnimation(animation);
+        Position currPosition = new Position();
+        int tileSize = 0;
 
-        Thread delayOnDraw = new Thread() {
+        for (Tile currTile : tilesView.getTiles()) {
+            currPosition = currTile.getPositionTile();
+            tileSize = currPosition.getBottom() - currPosition.getTop();
+            currPosition.setTop(currPosition.getTop() + tileSize);
+            currPosition.setBottom(currPosition.getBottom() + tileSize);
+            currTile.setPositionTile(currPosition);
+        }
+
+        /* Utiliser deux animations (dont une ne fait rien ici) et les enchaîner permet d'éviter
+         * le prblème de flicker à la fin de l'animation.
+         * Initialement (sans le listener et l'animation "vide" il y avait un clignotement à l'écran
+         * à la fin de l'animation de défilement. */
+        Animation animation = new TranslateAnimation(0, 0, 0 ,0);
+        animation.setDuration(1);
+
+        animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void run() {
+            public void onAnimationStart(Animation animation) {}
 
-                try {
-                    Thread.sleep(120);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                Position currPosition = new Position();
-                int tileSize = 0;
-
-                for (Tile currTile : tilesView.getTiles()) {
-                    currPosition = currTile.getPositionTile();
-                    tileSize = currPosition.getBottom() - currPosition.getTop();
-                    currPosition.setTop(currPosition.getTop() + tileSize);
-                    currPosition.setBottom(currPosition.getBottom() + tileSize);
-                    currTile.setPositionTile(currPosition);
-                }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                /* Animation du défilement des tiles */
+                animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_tiles_4x4);
+                animation.start();
             }
-        };
 
-        delayOnDraw.start();
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+
+        tilesView.startAnimation(animation);
     }
 }
