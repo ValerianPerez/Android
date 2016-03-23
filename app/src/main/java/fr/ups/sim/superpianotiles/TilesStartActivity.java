@@ -1,10 +1,7 @@
 package fr.ups.sim.superpianotiles;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Color;
-import android.os.Build;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -13,17 +10,16 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
-import android.widget.Toast;
 
-import fr.ups.sim.superpianotiles.obj.Position;
-import fr.ups.sim.superpianotiles.obj.Tile;
+import fr.ups.sim.superpianotiles.obj.data.Position;
+import fr.ups.sim.superpianotiles.obj.data.Tile;
 
 public class TilesStartActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         setContentView(R.layout.activity_tiles_start);
 
         //ICI - Commentez le code
@@ -33,8 +29,7 @@ public class TilesStartActivity extends Activity {
         tilesView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                boolean result = onTouchEventHandler(event);
-                return result;
+                return onTouchEventHandler(event);
             }
         });
     }
@@ -84,13 +79,14 @@ public class TilesStartActivity extends Activity {
             TilesView tilesView = (TilesView) findViewById(R.id.view);
             Tile currentTile = null;
 
-            if (! tilesView.getTiles().isEmpty())
+            if (!tilesView.getTiles().isEmpty())
                 currentTile = tilesView.getTiles().get(0);
 
             /* Si la première tile est touchée, alors il faut la supprimer. */
             /* On fait aussi défiler les autres tuiles vers le bas */
             if (currentTile != null && currentTile.isTouched(x, y)) {
                 tilesView.getTiles().remove(0);
+                tilesView.getTrack().pollFirstTile();
                 slideTiles();
                 Log.i("TilesView", "Tile touched - " + currentTile.getText());
             }
@@ -106,17 +102,17 @@ public class TilesStartActivity extends Activity {
         return false;
     }
 
+    /* Fait défiler les tiles vers le bas avec une animation quand l'utilisateur touche la bonne tile. */
     public void slideTiles() {
-
-        /* Utiliser deux animations (dont une ne fait rien ici) et les enchaîner permet d'éviter
-         * le prblème de flicker à la fin de l'animation.
-         * Initialement (sans le listener et l'animation "vide" il y avait un clignotement à l'écran
-         * à la fin de l'animation de défilement. */
         TilesView tilesView = (TilesView) findViewById(R.id.view);
 
+        /* Lancement de l'animation définie en xml dans le fichier res/anim/slide_tiles_4x4
+         * Surcharge des évènements onAnimationStart et onAnimationEnd dans TilesView */
         Animation slideTiles = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_tiles_4x4);
         tilesView.startAnimation(slideTiles);
 
+        /* Ce thread permet de synchroniser l'actualisation des positions des tiles avec la fin de
+         * l'animation de la vue (100ms). */
         Thread delayPositionRefresh = new Thread() {
             @Override
             public void run() {
@@ -128,15 +124,23 @@ public class TilesStartActivity extends Activity {
                 }
 
                 TilesView tilesView = (TilesView) findViewById(R.id.view);
-                Position currPosition = new Position();
+                Position currPosition = null;
                 int tileSize = 0;
 
+                /* On modifie les positions des tuiles à afficher */
                 for (Tile currTile : tilesView.getTiles()) {
                     currPosition = currTile.getPositionTile();
                     tileSize = currPosition.getBottom() - currPosition.getTop();
                     currPosition.setTop(currPosition.getTop() + tileSize);
                     currPosition.setBottom(currPosition.getBottom() + tileSize);
                     currTile.setPositionTile(currPosition);
+                }
+
+                try {
+                    tilesView.getTiles().add(tilesView.getTrack().nextTileDisplayed());
+                }
+                catch (Exception e) {
+                    System.err.println(e);
                 }
             }
         };

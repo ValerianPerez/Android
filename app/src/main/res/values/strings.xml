@@ -4,7 +4,7 @@
     <string name="title_activity_tiles">TilesActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="title_activity_tiles_start">TilesStartActivity</string>
+    <string name="title_activity_tiles_start">Super Piano Tiles !</string>    <!-- Nom de l'application dans le launcher de l'appareil -->
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>

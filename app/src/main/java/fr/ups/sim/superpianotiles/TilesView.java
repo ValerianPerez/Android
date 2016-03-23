@@ -3,19 +3,16 @@ package fr.ups.sim.superpianotiles;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import fr.ups.sim.superpianotiles.obj.Position;
-import fr.ups.sim.superpianotiles.obj.Tile;
+import fr.ups.sim.superpianotiles.obj.data.Tile;
+import fr.ups.sim.superpianotiles.obj.data.Track;
 
 /**
  * Custom view that displays tiles
@@ -27,6 +24,7 @@ public class TilesView extends ImageView {
 
     // ArrayList contenant les tiles à afficher à l'écran
     private ArrayList<Tile> tiles = new ArrayList<>();
+    private Track track = null;
 
     public TilesView(Context context) {
         super(context);
@@ -62,7 +60,6 @@ public class TilesView extends ImageView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-
         int paddingLeft = getPaddingLeft();
         int paddingTop = getPaddingTop();
         int paddingRight = getPaddingRight();
@@ -72,63 +69,38 @@ public class TilesView extends ImageView {
         int contentHeight = getHeight() - paddingTop - paddingBottom;
 
         if (init) {
-             /* Pour les pistes : Définir les 16 positions possibles suivants ces coordonnées
+             /* Pour les pistes : Définir les [16 | 25] positions possibles suivants ces coordonnées
 
-                L'écran est divisé en largeur sur 4 pistes
-                et en hauteur sur 4 lignes.
+                L'écran est divisé en largeur sur [4 | 5] pistes
+                et en hauteur sur [4 | 5] lignes.
 
-                left de 0 à contentWidth*3/4
-                right de contentWidth/4 à contentWidth
-                top de contentHeight*3/4 à 0
-                bottom de contentHeight à contentHeight/4
+                left de 0 à contentWidth*3/[4 | 5]
+                right de contentWidth/[4 | 5] à contentWidth
+                top de contentHeight*3/[4 | 5] à 0
+                bottom de contentHeight à contentHeight/[4 | 5]
             */
-
-            //Tile 1
-            int left = 0;
-            int top = contentHeight * 3 / 4;
-            int right = contentWidth / 4;
-            int bottom = contentHeight;
 
             // Une tile est composée de sa couleur, celle de son texte, le texte en question et sa taille
             // et enfin de sa position ainsi que de la forme rectangulaire nécessaire à son dessin.
-            Position positionTile1 = new Position(left, top, right, bottom);
-            Tile tile1 = new Tile(Color.BLACK, Color.WHITE, "1", 40, positionTile1, new RectF(left, top, right, bottom));
-            this.tiles.add(tile1);
 
-            //Tile 2
-            left = contentWidth / 4;
-            top = contentHeight / 2;
-            right = contentWidth / 2;
-            bottom = contentHeight * 3 / 4;
+            try {
+                track = new Track(25, contentWidth, contentHeight, 5, this);
+            } catch (Exception e) {
+                //TODO Gestion Exception Création Track
+            }
 
-            Position positionTile2 = new Position(left, top, right, bottom);
-            Tile tile2 = new Tile(Color.BLACK, Color.WHITE, "2", 40, positionTile2, new RectF(left, top, right, bottom));
-            this.tiles.add(tile2);
-
-            //Tile 3
-            left = contentWidth * 2 / 4;
-            top = contentHeight / 4;
-            right = contentWidth * 3 / 4;
-            bottom = contentHeight / 2;
-
-            Position positionTile3 = new Position(left, top, right, bottom);
-            Tile tile3 = new Tile(Color.BLACK, Color.WHITE, "3", 40, positionTile3, new RectF(left, top, right, bottom));
-            this.tiles.add(tile3);
-
-            //Tile 4
-            left = contentWidth * 3 / 4;
-            top = 0;
-            right = contentWidth;
-            bottom = contentHeight / 4;
-
-            Position positionTile4 = new Position(left, top, right, bottom);
-            Tile tile4 = new Tile(Color.BLACK, Color.WHITE, "4", 40, positionTile4, new RectF(left, top, right, bottom));
-            this.tiles.add(tile4);
-
+            this.tiles = track.tilesDisplay();
             init = false;
         }
 
-        addTiles(canvas, this.getTiles());
+        if (!this.getTiles().isEmpty())
+            addTiles(canvas, this.getTiles());
+        else {
+            Context context = getContext();
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(context, "Victoire !", duration);
+            toast.show();
+        }
 
         // Draw the example drawable on top of the text.
         if (mExampleDrawable != null) {
@@ -172,6 +144,7 @@ public class TilesView extends ImageView {
         return tiles;
     }
 
+    /* Méthodes permettant d'éviter l'effet de flickering des animations */
     @Override
     public void onAnimationStart() {
         super.onAnimationStart();
@@ -183,4 +156,6 @@ public class TilesView extends ImageView {
         super.onAnimationEnd();
         this.setDrawingCacheEnabled(false);
     }
+
+    public Track getTrack(){ return track; }
 }

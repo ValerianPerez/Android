@@ -1,8 +1,6 @@
-package fr.ups.sim.superpianotiles.obj;
+package fr.ups.sim.superpianotiles.obj.data;
 
 import android.graphics.Paint;
-import android.graphics.RectF;
-import android.util.Pair;
 
 /**
  * Created by Nolan on 21/03/2016.
@@ -19,7 +17,7 @@ public class Tile {
     public Paint pText = new Paint();
     public Paint pTile = new Paint();
 
-    public Tile(int colorTile, int colorText, String text, float textSize, Position positionTile, RectF tileForm) {
+    public Tile(int colorTile, int colorText, String text, float textSize, Position positionTile) {
         this.colorTile = colorTile;
         this.colorText = colorText;
         this.text = text;

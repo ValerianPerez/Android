@@ -1,4 +1,4 @@
-package fr.ups.sim.superpianotiles.obj;
+package fr.ups.sim.superpianotiles.obj.data;
 
 import android.graphics.RectF;
 
@@ -27,7 +27,9 @@ public class Position {
     private int bottom = 0;
     private RectF tileForm;
 
-    public Position() {}
+    public Position() {
+        tileForm = new RectF(0, 0, 0, 0);
+    }
 
     public Position(int l, int t, int r, int b) {
         left = l;
