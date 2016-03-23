@@ -1,5 +1,6 @@
 package fr.ups.sim.superpianotiles;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -7,6 +8,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -100,6 +102,10 @@ public class TilesView extends ImageView {
             int duration = Toast.LENGTH_SHORT;
             Toast toast = Toast.makeText(context, "Victoire !", duration);
             toast.show();
+            TextView textView = (TextView) findViewById(R.id.textView);
+            String chronoString = textView.getText().toString();
+
+            ((Activity)getContext()).finish();
         }
 
         // Draw the example drawable on top of the text.

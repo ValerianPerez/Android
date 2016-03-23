@@ -10,11 +10,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.TextView;
 
 import fr.ups.sim.superpianotiles.obj.data.Position;
 import fr.ups.sim.superpianotiles.obj.data.Tile;
+import fr.ups.sim.superpianotiles.obj.misc.Chrono;
+
+import static java.lang.System.nanoTime;
 
 public class TilesStartActivity extends Activity {
+
+    private Thread chrono;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,8 +30,46 @@ public class TilesStartActivity extends Activity {
 
         //ICI - Commentez le code
         TilesView tilesView = (TilesView) findViewById(R.id.view);
+        TextView textView = (TextView) findViewById(R.id.textView);
 
-        //ICI - Commentez le code
+        long launchTime;
+
+        launchTime = nanoTime();
+
+        chrono = new Thread() {
+            private long currChrono;
+
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        currChrono = nanoTime() - launchTime;
+                        sleep(10);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                long s = currChrono / 1000000000;
+                                long dcm = (int) (currChrono / 1000000)%1000;
+                                textView.setText(s + ":" + dcm);
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            public long getCurrChrono() {
+                return currChrono;
+            }
+        };
+
+        chrono.start();
+
+        /* Listener appelant la callback onTouchEventHandler lorsque l'utilisateur touche l'écran.
+         * La callback est appelé à la pression, au relâchement ou quand l'utilisateur reste appuyé.
+         * Cf. commentaire de onTouchEvzntHandler.
+         */
         tilesView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
