@@ -74,4 +74,5 @@ public class Tile {
         colorText = c;
         pText.setColor(c);
     }
+
 }

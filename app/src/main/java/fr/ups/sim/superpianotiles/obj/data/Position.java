@@ -84,4 +84,3 @@ public class Position {
         return "[" + left + ", " + top + ", " + right + ", " + bottom + "]";
     }
 }
-
