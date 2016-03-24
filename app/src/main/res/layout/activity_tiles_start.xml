@@ -19,16 +19,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
+        android:text="0:000"
         android:textColor="@android:color/holo_blue_dark"
-        android:textSize="24sp"
+        android:textSize="32sp"
         android:shadowColor="@android:color/white"
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="12"
         android:fontFamily="sans-serif-medium"
-        android:id="@+id/textView"
+        android:id="@+id/textViewChrono"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentRight="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="0:000"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="32sp"
+        android:shadowColor="@android:color/holo_purple"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="12"
+        android:fontFamily="sans-serif-medium"
+        android:id="@+id/textViewScore"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true" />
 
 </RelativeLayout>

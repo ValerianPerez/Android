@@ -86,7 +86,7 @@ public class TilesView extends ImageView {
             // et enfin de sa position ainsi que de la forme rectangulaire nécessaire à son dessin.
 
             try {
-                track = new Track(25, contentWidth, contentHeight, 5, this);
+                track = new Track(25, contentWidth, contentHeight, 5);
             } catch (Exception e) {
                 //TODO Gestion Exception Création Track
             }
@@ -102,8 +102,12 @@ public class TilesView extends ImageView {
             int duration = Toast.LENGTH_SHORT;
             Toast toast = Toast.makeText(context, "Victoire !", duration);
             toast.show();
-            TextView textView = (TextView) findViewById(R.id.textView);
-            String chronoString = textView.getText().toString();
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             ((Activity)getContext()).finish();
         }

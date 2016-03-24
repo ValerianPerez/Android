@@ -14,13 +14,14 @@ import android.widget.TextView;
 
 import fr.ups.sim.superpianotiles.obj.data.Position;
 import fr.ups.sim.superpianotiles.obj.data.Tile;
-import fr.ups.sim.superpianotiles.obj.misc.Chrono;
 
 import static java.lang.System.nanoTime;
 
 public class TilesStartActivity extends Activity {
 
     private Thread chrono;
+    private long chronoValue;
+    private long score = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,45 +31,13 @@ public class TilesStartActivity extends Activity {
 
         //ICI - Commentez le code
         TilesView tilesView = (TilesView) findViewById(R.id.view);
-        TextView textView = (TextView) findViewById(R.id.textView);
 
-        long launchTime;
-
-        launchTime = nanoTime();
-
-        chrono = new Thread() {
-            private long currChrono;
-
-            @Override
-            public void run() {
-                try {
-                    while (!isInterrupted()) {
-                        currChrono = nanoTime() - launchTime;
-                        sleep(10);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                long s = currChrono / 1000000000;
-                                long dcm = (int) (currChrono / 1000000)%1000;
-                                textView.setText(s + ":" + dcm);
-                            }
-                        });
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            public long getCurrChrono() {
-                return currChrono;
-            }
-        };
-
-        chrono.start();
+        /* Lancement du chronomètre */
+        launchChronoScore();
 
         /* Listener appelant la callback onTouchEventHandler lorsque l'utilisateur touche l'écran.
          * La callback est appelé à la pression, au relâchement ou quand l'utilisateur reste appuyé.
-         * Cf. commentaire de onTouchEvzntHandler.
+         * Cf. commentaire de onTouchEventHandler.
          */
         tilesView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -129,13 +98,17 @@ public class TilesStartActivity extends Activity {
             /* Si la première tile est touchée, alors il faut la supprimer. */
             /* On fait aussi défiler les autres tuiles vers le bas */
             if (currentTile != null && currentTile.isTouched(x, y)) {
+                score += (Long.parseLong(currentTile.getText()) * 100 * chronoValue / 11);
                 tilesView.getTiles().remove(0);
                 tilesView.getTrack().pollFirstTile();
                 slideTiles();
                 Log.i("TilesView", "Tile touched - " + currentTile.getText());
             }
-            else // Si aucune tile n'a été touché, le joueur a perdu
-                Log.i("TilesView", "No tile touched - Player Lost");
+            else { // Si aucune tile n'a été touché, ou si ce n'était pas le bonne,
+                // le joueur perd des points
+                Log.i("TilesView", "No tile touched - Points loss");
+                score -= Long.parseLong(currentTile.getText()) * 300 * chronoValue / 13;
+            }
 
             return true;
         }
@@ -190,5 +163,38 @@ public class TilesStartActivity extends Activity {
         };
 
         delayPositionRefresh.start();
+    }
+
+    public void launchChronoScore() {
+        final TextView textViewChrono = (TextView) findViewById(R.id.textViewChrono);
+        final TextView textViewScore = (TextView) findViewById(R.id.textViewScore);
+        final long launchTime;
+
+        launchTime = nanoTime();
+
+        chrono = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        chronoValue = nanoTime() - launchTime;
+                        sleep(10);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                long s = chronoValue / 1000000000;
+                                long dcm = (int) (chronoValue / 1000000)%1000;
+                                textViewChrono.setText(s + ":" + dcm);
+                                textViewScore.setText("" + score);
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        chrono.start();
     }
 }
