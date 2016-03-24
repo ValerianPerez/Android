@@ -20,9 +20,9 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="0:000"
-        android:textColor="@android:color/holo_blue_dark"
+        android:textColor="#00CCFF"
         android:textSize="32sp"
-        android:shadowColor="@android:color/white"
+        android:shadowColor="#00AAFF"
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="12"
@@ -36,9 +36,9 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="0:000"
-        android:textColor="@android:color/holo_red_dark"
+        android:textColor="#FF0000"
         android:textSize="32sp"
-        android:shadowColor="@android:color/holo_purple"
+        android:shadowColor="#FFa500"
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="12"
@@ -46,5 +46,22 @@
         android:id="@+id/textViewScore"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Combo"
+        android:id="@+id/textViewCombo"
+        android:textColor="#FFFF00"
+        android:textSize="32sp"
+        android:shadowColor="#FFFFFF"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="12"
+        android:layout_marginBottom="65dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible" />
 
 </RelativeLayout>

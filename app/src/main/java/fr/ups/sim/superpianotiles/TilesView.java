@@ -86,7 +86,7 @@ public class TilesView extends ImageView {
             // et enfin de sa position ainsi que de la forme rectangulaire nécessaire à son dessin.
 
             try {
-                track = new Track(25, contentWidth, contentHeight, 5);
+                track = new Track(25, contentWidth, contentHeight, 4);
             } catch (Exception e) {
                 //TODO Gestion Exception Création Track
             }

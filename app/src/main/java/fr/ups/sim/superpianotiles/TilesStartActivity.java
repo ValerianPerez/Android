@@ -20,8 +20,9 @@ import static java.lang.System.nanoTime;
 public class TilesStartActivity extends Activity {
 
     private Thread chrono;
-    private long chronoValue;
+    private long chronoSeconds;
     private long score = 0;
+    private int combo = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +34,7 @@ public class TilesStartActivity extends Activity {
         TilesView tilesView = (TilesView) findViewById(R.id.view);
 
         /* Lancement du chronomètre */
-        launchChronoScore();
+        launchChronoScoreCombo();
 
         /* Listener appelant la callback onTouchEventHandler lorsque l'utilisateur touche l'écran.
          * La callback est appelé à la pression, au relâchement ou quand l'utilisateur reste appuyé.
@@ -98,7 +99,8 @@ public class TilesStartActivity extends Activity {
             /* Si la première tile est touchée, alors il faut la supprimer. */
             /* On fait aussi défiler les autres tuiles vers le bas */
             if (currentTile != null && currentTile.isTouched(x, y)) {
-                score += (Long.parseLong(currentTile.getText()) * 100 * chronoValue / 11);
+                score += (Long.parseLong(currentTile.getText()) * 1100 / (chronoSeconds + 1));
+                combo++;
                 tilesView.getTiles().remove(0);
                 tilesView.getTrack().pollFirstTile();
                 slideTiles();
@@ -107,7 +109,8 @@ public class TilesStartActivity extends Activity {
             else { // Si aucune tile n'a été touché, ou si ce n'était pas le bonne,
                 // le joueur perd des points
                 Log.i("TilesView", "No tile touched - Points loss");
-                score -= Long.parseLong(currentTile.getText()) * 300 * chronoValue / 13;
+                score -= Long.parseLong(currentTile.getText()) * 300 * chronoSeconds / 13;
+                combo = 0;
             }
 
             return true;
@@ -122,11 +125,13 @@ public class TilesStartActivity extends Activity {
     /* Fait défiler les tiles vers le bas avec une animation quand l'utilisateur touche la bonne tile. */
     public void slideTiles() {
         TilesView tilesView = (TilesView) findViewById(R.id.view);
-
+        TextView comboView = (TextView) findViewById(R.id.textViewCombo);
         /* Lancement de l'animation définie en xml dans le fichier res/anim/slide_tiles_4x4
          * Surcharge des évènements onAnimationStart et onAnimationEnd dans TilesView */
         Animation slideTiles = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_tiles_4x4);
+        Animation fadeCombo = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.combo_fading);
         tilesView.startAnimation(slideTiles);
+        comboView.startAnimation(fadeCombo);
 
         /* Ce thread permet de synchroniser l'actualisation des positions des tiles avec la fin de
          * l'animation de la vue (100ms). */
@@ -165,27 +170,32 @@ public class TilesStartActivity extends Activity {
         delayPositionRefresh.start();
     }
 
-    public void launchChronoScore() {
+    public void launchChronoScoreCombo() {
         final TextView textViewChrono = (TextView) findViewById(R.id.textViewChrono);
         final TextView textViewScore = (TextView) findViewById(R.id.textViewScore);
+        final TextView textViewCombo = (TextView) findViewById(R.id.textViewCombo);
         final long launchTime;
 
         launchTime = nanoTime();
 
         chrono = new Thread() {
+            public long chronoNano;
+
             @Override
             public void run() {
                 try {
                     while (!isInterrupted()) {
-                        chronoValue = nanoTime() - launchTime;
+                        chronoNano = nanoTime() - launchTime;
                         sleep(10);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                long s = chronoValue / 1000000000;
-                                long dcm = (int) (chronoValue / 1000000)%1000;
+                                long s = chronoNano / 1000000000;
+                                long dcm = (int) (chronoNano / 1000000)%1000;
                                 textViewChrono.setText(s + ":" + dcm);
                                 textViewScore.setText("" + score);
+                                textViewCombo.setText("x" + combo);
+                                chronoSeconds = s;
                             }
                         });
                     }
