@@ -48,12 +48,14 @@ public class TilesStartActivity extends Activity {
         });
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_tiles_start, menu);
         return true;
     }
+    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -92,6 +94,8 @@ public class TilesStartActivity extends Activity {
 
             TilesView tilesView = (TilesView) findViewById(R.id.view);
             Tile currentTile = null;
+            TextView comboView = (TextView) findViewById(R.id.textViewCombo);
+
 
             if (!tilesView.getTiles().isEmpty())
                 currentTile = tilesView.getTiles().get(0);
@@ -104,6 +108,9 @@ public class TilesStartActivity extends Activity {
                 tilesView.getTiles().remove(0);
                 tilesView.getTrack().pollFirstTile();
                 slideTiles();
+
+                comboView.setX(x-10);
+                comboView.setY(y-65);
                 Log.i("TilesView", "Tile touched - " + currentTile.getText());
             }
             else { // Si aucune tile n'a été touché, ou si ce n'était pas le bonne,
